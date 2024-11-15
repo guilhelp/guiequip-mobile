@@ -43,7 +43,7 @@ fun LoginScreen(navController: NavController) {
             account?.idToken?.let { idToken ->
                 authRepository.firebaseAuthWithGoogle(idToken) { isSuccessful ->
                     if (isSuccessful) {
-                        navController.navigate("home_screen")
+                        navController.navigate("departamentos_screen")
                     } else {
                         Log.e("Login", "Authentication failed")
                     }
