@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "290039052781",
+    "project_id": "guiequip",
+    "storage_bucket": "guiequip.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:290039052781:android:9f6369168cfd321bd08fe4",
+        "android_client_info": {
+          "package_name": "com.example.guiequip"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "290039052781-kor7rrt0hr0md9gb3hpei4napnijb7qu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.guiequip",
+            "certificate_hash": "8f92b882d955ad8091f660b1dc2f614814224591"
+          }
+        },
+        {
+          "client_id": "290039052781-6ki54pshdrajp36vj6es6brvi8kgrklm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZ6_sNpm4ZJAA__wM1rZ3GdRResQ6akVs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "290039052781-6ki54pshdrajp36vj6es6brvi8kgrklm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
