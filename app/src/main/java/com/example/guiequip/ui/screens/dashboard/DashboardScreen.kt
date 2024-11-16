@@ -117,52 +117,71 @@ fun DashboardScreen(navController: NavController, totalEquipamentos: Int, totalC
 
 @Composable
 fun DrawerContent(navController: NavController, departamentoId: String) {
-    Column(
+    Box(
         modifier = Modifier
             .background(Color.White)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp),
-
+            .padding(16.dp)
+            .fillMaxSize(0.5f)
     ) {
-        // Botão Voltar
-        TextButton(onClick = {
-            navController.popBackStack()
-        }) {
-            Text(
-                text = "Voltar",
-                style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
-                color = Color.Black
-            )
-        }
-        // Botão Equipamentos
-        TextButton(onClick = {
-            navController.navigate("departamentos_screen")
-        }) {
-            Text(
-                text = "Equipamentos",
-                style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
-                color = Color.Black
-            )
-        }
-        // Botão Colaboradores
-        TextButton(onClick = {
-            navController.navigate("colaboradores_screen/$departamentoId")
-        }) {
-            Text(
-                text = "Colaboradores",
-                style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
-                color = Color.Black
-            )
-        }
-        // Botão Sair
-        TextButton(onClick = {
-            navController.navigate("login_screen")
-        }) {
-            Text(
-                text = "Sair",
-                style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
-                color = Color.Black
-            )
+        Column(
+            modifier = Modifier.fillMaxWidth(), // Garante que ocupe a largura total dentro da Box
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            // Botão Voltar
+            TextButton(onClick = { navController.navigate("departamentos_screen") }) {
+                Text(
+                    text = "Voltar",
+                    style = androidx.compose.ui.text.TextStyle(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = Color.Black
+                )
+            }
+            // Botão Dashboard
+            TextButton(onClick = { navController.navigate("dashboard_screen/$departamentoId") }) {
+                Text(
+                    text = "Dashboard",
+                    style = androidx.compose.ui.text.TextStyle(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = Color.Black
+                )
+            }
+            // Botão Equipamentos
+            TextButton(onClick = { navController.navigate("equipamentos_screen/$departamentoId") }) {
+                Text(
+                    text = "Equipamentos",
+                    style = androidx.compose.ui.text.TextStyle(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = Color.Black
+                )
+            }
+            // Botão Colaboradores
+            TextButton(onClick = { navController.navigate("colaboradores_screen/$departamentoId") }) {
+                Text(
+                    text = "Colaboradores",
+                    style = androidx.compose.ui.text.TextStyle(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = Color.Black
+                )
+            }
+            // Botão Sair
+            TextButton(onClick = { navController.navigate("login_screen") }) {
+                Text(
+                    text = "Sair",
+                    style = androidx.compose.ui.text.TextStyle(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = Color.Black
+                )
+            }
         }
     }
 }

@@ -115,22 +115,37 @@ fun ColaboradoresScreen(
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
 
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    contentPadding = PaddingValues(bottom = 64.dp)
-                ) {
-                    items(colaboradores) { colaborador ->
-                        ColaboradorCard(
-                            colaborador = colaborador,
-                            onEdit = { navController.navigate("atualizar_colaborador_screen/${colaborador.id}") },
-                            onDelete = { colaboradoresViewModel.deleteColaborador(it) }
+                if (colaboradores.isEmpty()) {
+                    // Exibe mensagem caso não haja colaboradores
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Nenhum colaborador encontrado.",
+                            fontSize = 16.sp,
+                            color = Color.Gray
                         )
+                    }
+                } else {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(bottom = 64.dp)
+                    ) {
+                        items(colaboradores) { colaborador ->
+                            ColaboradorCard(
+                                colaborador = colaborador,
+                                onEdit = { navController.navigate("atualizar_colaborador_screen/${colaborador.id}") },
+                                onDelete = { colaboradoresViewModel.deleteColaborador(it) }
+                            )
+                        }
                     }
                 }
             }
         }
     }
 }
+
 
 @Composable
 fun ColaboradorCard(
@@ -193,51 +208,71 @@ fun ColaboradorCard(
 
 @Composable
 fun DrawerContentColaboradores(navController: NavController, departamentoId: String) {
-    Column(
+    Box(
         modifier = Modifier
             .background(Color.White)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp),
+            .padding(16.dp)
+            .fillMaxSize(0.5f)
     ) {
-        // Botão Voltar
-        TextButton(onClick = {
-            navController.navigate("departamentos_screen")
-        }) {
-            Text(
-                text = "Voltar",
-                style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
-                color = Color.Black
-            )
-        }
-        // Botão Equipamentos
-        TextButton(onClick = {
-            navController.navigate("departamentos_screen")
-        }) {
-            Text(
-                text = "Equipamentos",
-                style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
-                color = Color.Black
-            )
-        }
-        // Botão Colaboradores
-        TextButton(onClick = {
-            navController.navigate("dashboard_screen/$departamentoId")
-        }) {
-            Text(
-                text = "Dashboard",
-                style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
-                color = Color.Black
-            )
-        }
-        // Botão Sair
-        TextButton(onClick = {
-            navController.navigate("login_screen")
-        }) {
-            Text(
-                text = "Sair",
-                style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
-                color = Color.Black
-            )
+        Column(
+            modifier = Modifier.fillMaxWidth(), // Garante que ocupe a largura total dentro da Box
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            // Botão Voltar
+            TextButton(onClick = { navController.navigate("departamentos_screen") }) {
+                Text(
+                    text = "Voltar",
+                    style = androidx.compose.ui.text.TextStyle(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = Color.Black
+                )
+            }
+            // Botão Dashboard
+            TextButton(onClick = { navController.navigate("dashboard_screen/$departamentoId") }) {
+                Text(
+                    text = "Dashboard",
+                    style = androidx.compose.ui.text.TextStyle(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = Color.Black
+                )
+            }
+            // Botão Equipamentos
+            TextButton(onClick = { navController.navigate("equipamentos_screen/$departamentoId") }) {
+                Text(
+                    text = "Equipamentos",
+                    style = androidx.compose.ui.text.TextStyle(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = Color.Black
+                )
+            }
+            // Botão Colaboradores
+            TextButton(onClick = { navController.navigate("colaboradores_screen/$departamentoId") }) {
+                Text(
+                    text = "Colaboradores",
+                    style = androidx.compose.ui.text.TextStyle(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = Color.Black
+                )
+            }
+            // Botão Sair
+            TextButton(onClick = { navController.navigate("login_screen") }) {
+                Text(
+                    text = "Sair",
+                    style = androidx.compose.ui.text.TextStyle(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = Color.Black
+                )
+            }
         }
     }
 }
