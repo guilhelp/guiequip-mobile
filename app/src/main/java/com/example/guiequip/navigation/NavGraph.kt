@@ -23,12 +23,15 @@ import com.example.guiequip.ui.screens.colaboradores.criarColaborador
 import com.example.guiequip.ui.screens.dashboard.DashboardScreen
 import com.example.guiequip.ui.screens.departamentos.AtualizarDepartamentoScreen
 import com.example.guiequip.ui.screens.departamentos.criarDepartamento
+import com.example.guiequip.ui.screens.equipamentos.AtualizarEquipamentoScreen
+import com.example.guiequip.ui.screens.equipamentos.CriarEquipamentoScreen
 import com.example.guiequip.ui.screens.equipamentos.EquipamentosScreen
+import com.google.firebase.firestore.FirebaseFirestore
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavGraph(navController: NavHostController) {
-    // Inicializando o ViewModel
+
     val departamentosViewModel: DepartamentosViewModel = viewModel()
 
     NavHost(navController = navController, startDestination = "login_screen") {
@@ -52,7 +55,7 @@ fun NavGraph(navController: NavHostController) {
                     )
                 },
                 onDelete = { departamentoId ->
-                    // Implementação do delete
+
                 },
                 onAdd = {
                     navController.navigate("criar_departamento_screen")
@@ -64,8 +67,6 @@ fun NavGraph(navController: NavHostController) {
             val departamentoId = backStackEntry.arguments?.getString("departamentoId") ?: ""
             DashboardScreen(
                 navController = navController,
-                totalEquipamentos = 10,
-                totalColaboradores = 5,
                 departamentoId = departamentoId
             )
         }
@@ -73,14 +74,13 @@ fun NavGraph(navController: NavHostController) {
         composable("equipamentos_screen/{departamentoId}") { backStackEntry ->
             val departamentoId = backStackEntry.arguments?.getString("departamentoId") ?: ""
 
-            // A inicialização do viewModel deve estar dentro do composable
             EquipamentosScreen(
                 navController = navController,
                 departamentoId = departamentoId,
                 onAdd = { navController.navigate("criar_equipamento_screen/$departamentoId") },
                 onEdit = { equipamentoId -> navController.navigate("editar_equipamento_screen/$equipamentoId") },
                 onDelete = { equipamentoId ->
-                    // Chamada de exclusão será feita internamente na tela EquipamentosScreen
+
                 }
             )
         }
@@ -141,6 +141,40 @@ fun NavGraph(navController: NavHostController) {
                 }
             )
         }
+
+        composable("criar_equipamento_screen/{departamentoId}") { backStackEntry ->
+            val departamentoId = backStackEntry.arguments?.getString("departamentoId") ?: ""
+
+            CriarEquipamentoScreen(
+                departamentoId = departamentoId,
+                onBack = { navController.popBackStack() },
+                onSuccess = {
+
+                    navController.popBackStack()
+                },
+                onError = { errorMessage ->
+
+                    Log.e("CriarEquipamento", "Erro: $errorMessage")
+                }
+            )
+        }
+
+        composable("editar_equipamento_screen/{equipamentoId}") { backStackEntry ->
+            val equipamentoId = backStackEntry.arguments?.getString("equipamentoId") ?: ""
+            AtualizarEquipamentoScreen(
+                equipamentoId = equipamentoId,
+                onBack = { navController.popBackStack() },
+                onSuccess = {
+                    navController.popBackStack()
+                },
+                onError = { error ->
+                    println("Erro ao atualizar: $error")
+                }
+            )
+        }
+
+
+
 
         composable("atualizar_departamento_screen/{departamentoId}/{nome}/{descricao}") { backStackEntry ->
             val departamentoId = backStackEntry.arguments?.getString("departamentoId") ?: ""

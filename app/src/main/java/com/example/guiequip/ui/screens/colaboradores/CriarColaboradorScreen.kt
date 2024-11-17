@@ -87,7 +87,6 @@ fun CriarColaboradorScreen(onBack: () -> Unit, onSubmit: (String, String) -> Uni
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Botão
             Button(
                 onClick = {
                     if (nome.isNotBlank() && cargo.isNotBlank()) {

@@ -1,5 +1,7 @@
 package com.example.guiequip.ui.screens.dashboard
 
+import ColaboradoresViewModel
+import EquipamentosViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -13,26 +15,49 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.guiequip.R
+import com.example.guiequip.ui.screens.equipamentos.DrawerContentEquipamentos
+import com.example.guiequip.ui.theme.JetBrainsMono
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DashboardScreen(navController: NavController, totalEquipamentos: Int, totalColaboradores: Int, departamentoId: String) {
+fun DashboardScreen(
+    navController: NavController,
+    departamentoId: String,
+    equipamentosViewModel: EquipamentosViewModel = viewModel(),
+    colaboradoresViewModel: ColaboradoresViewModel = viewModel()
+) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    var totalEquipamentos by remember { mutableStateOf(0) }
+    var totalColaboradores by remember { mutableStateOf(0) }
+
+    LaunchedEffect(departamentoId) {
+        equipamentosViewModel.fetchEquipamentos(departamentoId)
+        colaboradoresViewModel.fetchColaboradores(departamentoId)
+    }
+
+    val equipamentos = equipamentosViewModel.equipamentos.collectAsState(initial = emptyList())
+    val colaboradores = colaboradoresViewModel.colaboradores.collectAsState(initial = emptyList())
+
+    totalEquipamentos = equipamentos.value.size
+    totalColaboradores = colaboradores.value.size
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            DrawerContent(
-                navController = navController, departamentoId = departamentoId)
-        }
+            if (drawerState.isOpen) {
+                DrawerContent(navController = navController, departamentoId = departamentoId)
+            }
+        },
+        gesturesEnabled = drawerState.isOpen
     ) {
         Scaffold(
             topBar = {
@@ -43,13 +68,11 @@ fun DashboardScreen(navController: NavController, totalEquipamentos: Int, totalC
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            // Logo
                             Image(
                                 painter = painterResource(R.drawable.logo),
                                 contentDescription = "Logo",
                                 modifier = Modifier.height(90.dp)
                             )
-                            // Menu Hambúrguer
                             IconButton(onClick = { scope.launch { drawerState.open() } }) {
                                 Icon(Icons.Default.Menu, contentDescription = "Menu")
                             }
@@ -67,7 +90,9 @@ fun DashboardScreen(navController: NavController, totalEquipamentos: Int, totalC
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Card(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(8.dp),
+
                     ) {
                         Column(
                             modifier = Modifier
@@ -77,19 +102,21 @@ fun DashboardScreen(navController: NavController, totalEquipamentos: Int, totalC
                         ) {
                             Text(
                                 text = totalEquipamentos.toString(),
-                                style = TextStyle(fontSize = 72.sp, fontWeight = FontWeight.Bold),
-                                color = Color.Black
+                                style = TextStyle(fontFamily = JetBrainsMono, fontSize = 72.sp, fontWeight = FontWeight.Bold),
+
+
                             )
                             Text(
                                 text = "Total de Equipamentos",
-                                style = TextStyle(fontSize = 16.sp),
-                                color = Color.Black
+                                style = TextStyle(fontFamily = JetBrainsMono, fontSize = 16.sp),
+
                             )
                         }
                     }
 
                     Card(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(8.dp),
                     ) {
                         Column(
                             modifier = Modifier
@@ -99,13 +126,13 @@ fun DashboardScreen(navController: NavController, totalEquipamentos: Int, totalC
                         ) {
                             Text(
                                 text = totalColaboradores.toString(),
-                                style = TextStyle(fontSize = 72.sp, fontWeight = FontWeight.Bold),
-                                color = Color.Black
+                                style = TextStyle(fontFamily = JetBrainsMono, fontSize = 72.sp, fontWeight = FontWeight.Bold),
+
                             )
                             Text(
                                 text = "Total de Colaboradores",
-                                style = TextStyle(fontSize = 16.sp),
-                                color = Color.Black
+                                style = TextStyle(fontFamily = JetBrainsMono, fontSize = 16.sp),
+
                             )
                         }
                     }
@@ -120,58 +147,58 @@ fun DrawerContent(navController: NavController, departamentoId: String) {
     Box(
         modifier = Modifier
             .background(Color.White)
-            .padding(16.dp)
-            .fillMaxSize(0.5f)
+            .fillMaxSize()
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(), // Garante que ocupe a largura total dentro da Box
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            // Botão Voltar
-            TextButton(onClick = { navController.navigate("departamentos_screen") }) {
-                Text(
-                    text = "Voltar",
-                    style = androidx.compose.ui.text.TextStyle(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = Color.Black
-                )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(24.dp)
+            ) {
+                TextButton(onClick = { navController.navigate("departamentos_screen") }) {
+                    Text(
+                        text = "Voltar",
+                        style = androidx.compose.ui.text.TextStyle(
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = Color.Black
+                    )
+                }
+                TextButton(onClick = { navController.navigate("dashboard_screen/$departamentoId") }) {
+                    Text(
+                        text = "Dashboard",
+                        style = androidx.compose.ui.text.TextStyle(
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = Color.Black
+                    )
+                }
+                TextButton(onClick = { navController.navigate("equipamentos_screen/$departamentoId") }) {
+                    Text(
+                        text = "Equipamentos",
+                        style = androidx.compose.ui.text.TextStyle(
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = Color.Black
+                    )
+                }
+                TextButton(onClick = { navController.navigate("colaboradores_screen/$departamentoId") }) {
+                    Text(
+                        text = "Colaboradores",
+                        style = androidx.compose.ui.text.TextStyle(
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = Color.Black
+                    )
+                }
             }
-            // Botão Dashboard
-            TextButton(onClick = { navController.navigate("dashboard_screen/$departamentoId") }) {
-                Text(
-                    text = "Dashboard",
-                    style = androidx.compose.ui.text.TextStyle(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = Color.Black
-                )
-            }
-            // Botão Equipamentos
-            TextButton(onClick = { navController.navigate("equipamentos_screen/$departamentoId") }) {
-                Text(
-                    text = "Equipamentos",
-                    style = androidx.compose.ui.text.TextStyle(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = Color.Black
-                )
-            }
-            // Botão Colaboradores
-            TextButton(onClick = { navController.navigate("colaboradores_screen/$departamentoId") }) {
-                Text(
-                    text = "Colaboradores",
-                    style = androidx.compose.ui.text.TextStyle(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = Color.Black
-                )
-            }
-            // Botão Sair
             TextButton(onClick = { navController.navigate("login_screen") }) {
                 Text(
                     text = "Sair",
@@ -185,5 +212,6 @@ fun DrawerContent(navController: NavController, departamentoId: String) {
         }
     }
 }
+
 
 

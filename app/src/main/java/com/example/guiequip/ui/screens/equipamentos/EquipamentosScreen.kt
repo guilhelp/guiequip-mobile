@@ -35,13 +35,13 @@ import com.example.guiequip.ui.screens.dashboard.DrawerContent
 import kotlinx.coroutines.launch
 import java.time.format.TextStyle
 
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun EquipamentosScreen(
     navController: NavController,
     departamentoId: String,
-    equipamentosViewModel: EquipamentosViewModel = viewModel(), // Inicializa ou injeta o ViewModel
+    equipamentosViewModel: EquipamentosViewModel = viewModel(),
     onAdd: () -> Unit,
     onEdit: (String) -> Unit,
     onDelete: (String) -> Unit
@@ -58,7 +58,9 @@ fun EquipamentosScreen(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            DrawerContentEquipamentos(navController = navController, departamentoId = departamentoId)
+            if (drawerState.isOpen) {
+                DrawerContentEquipamentos(navController = navController, departamentoId = departamentoId)
+            }
         },
         gesturesEnabled = drawerState.isOpen
     ) {
@@ -71,14 +73,12 @@ fun EquipamentosScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            // Logo do lado esquerdo
                             Image(
                                 painter = painterResource(R.drawable.logo),
                                 contentDescription = "Logo",
                                 modifier = Modifier.height(90.dp),
                                 alignment = Alignment.CenterStart
                             )
-                            // Botão de menu hambúrguer do lado direito
                             IconButton(onClick = { scope.launch { drawerState.open() } }) {
                                 Icon(Icons.Default.Menu, contentDescription = "Menu")
                             }
@@ -89,7 +89,7 @@ fun EquipamentosScreen(
             },
             floatingActionButton = {
                 FloatingActionButton(onClick = {
-                    navController.navigate("criar_colaborador_screen/$departamentoId")
+                    navController.navigate("criar_equipamento_screen/$departamentoId")
                 }) {
                     Box(
                         modifier = Modifier
@@ -136,7 +136,9 @@ fun EquipamentosScreen(
                             EquipamentoCard(
                                 equipamento = equipamento,
                                 onEdit = { onEdit(equipamento.id ?: "") },
-                                onDelete = { onDelete(equipamento.id ?: "") }
+                                onDelete = { equipamentoId ->
+                                    equipamentosViewModel.deleteEquipamento(equipamentoId)
+                                }
                             )
                         }
                     }
@@ -147,66 +149,64 @@ fun EquipamentosScreen(
 }
 
 
-
-
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DrawerContentEquipamentos(navController: NavController, departamentoId: String) {
     Box(
         modifier = Modifier
             .background(Color.White)
-            .padding(16.dp)
-            .fillMaxSize(0.5f)
+            .fillMaxSize()
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(), // Garante que ocupe a largura total dentro da Box
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            // Botão Voltar
-            TextButton(onClick = { navController.navigate("departamentos_screen") }) {
-                Text(
-                    text = "Voltar",
-                    style = androidx.compose.ui.text.TextStyle(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = Color.Black
-                )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(24.dp)
+            ) {
+                TextButton(onClick = { navController.navigate("departamentos_screen") }) {
+                    Text(
+                        text = "Voltar",
+                        style = androidx.compose.ui.text.TextStyle(
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = Color.Black
+                    )
+                }
+                TextButton(onClick = { navController.navigate("dashboard_screen/$departamentoId") }) {
+                    Text(
+                        text = "Dashboard",
+                        style = androidx.compose.ui.text.TextStyle(
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = Color.Black
+                    )
+                }
+                TextButton(onClick = { navController.navigate("equipamentos_screen/$departamentoId") }) {
+                    Text(
+                        text = "Equipamentos",
+                        style = androidx.compose.ui.text.TextStyle(
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = Color.Black
+                    )
+                }
+                TextButton(onClick = { navController.navigate("colaboradores_screen/$departamentoId") }) {
+                    Text(
+                        text = "Colaboradores",
+                        style = androidx.compose.ui.text.TextStyle(
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = Color.Black
+                    )
+                }
             }
-            // Botão Dashboard
-            TextButton(onClick = { navController.navigate("dashboard_screen/$departamentoId") }) {
-                Text(
-                    text = "Dashboard",
-                    style = androidx.compose.ui.text.TextStyle(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = Color.Black
-                )
-            }
-            // Botão Equipamentos
-            TextButton(onClick = { navController.navigate("equipamentos_screen/$departamentoId") }) {
-                Text(
-                    text = "Equipamentos",
-                    style = androidx.compose.ui.text.TextStyle(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = Color.Black
-                )
-            }
-            // Botão Colaboradores
-            TextButton(onClick = { navController.navigate("colaboradores_screen/$departamentoId") }) {
-                Text(
-                    text = "Colaboradores",
-                    style = androidx.compose.ui.text.TextStyle(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = Color.Black
-                )
-            }
-            // Botão Sair
             TextButton(onClick = { navController.navigate("login_screen") }) {
                 Text(
                     text = "Sair",
@@ -224,6 +224,7 @@ fun DrawerContentEquipamentos(navController: NavController, departamentoId: Stri
 
 
 
+
 @Composable
 fun EquipamentoCard(
     equipamento: Equipamento,
@@ -233,13 +234,11 @@ fun EquipamentoCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .clickable { /* Ação opcional ao clicar no card */ },
+            .padding(vertical = 8.dp),
         shape = MaterialTheme.shapes.medium,
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            // Exibe os detalhes básicos do equipamento
             Text(
                 text = "${equipamento.tipoEquipamento} | ${equipamento.marca} | ${equipamento.modelo}",
                 fontSize = 18.sp,
@@ -247,7 +246,6 @@ fun EquipamentoCard(
                 color = Color.Black
             )
 
-            // Exibe os detalhes adicionais somente se for um notebook
             if (equipamento.tipoEquipamento == "Notebook") {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(

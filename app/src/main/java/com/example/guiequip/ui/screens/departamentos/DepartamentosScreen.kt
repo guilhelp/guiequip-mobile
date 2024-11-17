@@ -101,7 +101,7 @@ fun DepartamentosScreen(
                         onDelete = { departamentoId ->
                             departamentosViewModel.deleteDepartamento(departamentoId)
                         },
-                        navController = navController // Passando o navController
+                        navController = navController
                     )
                 }
             }
@@ -114,7 +114,7 @@ fun DepartamentoCard(
     departamento: Departamento,
     onEdit: (String) -> Unit,
     onDelete: (String) -> Unit,
-    navController: NavHostController // Parâmetro navController
+    navController: NavHostController
 ) {
     Card(
         modifier = Modifier

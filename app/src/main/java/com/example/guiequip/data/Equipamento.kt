@@ -11,7 +11,7 @@ data class Equipamento(
     val hdSsd: String? = null,
     val usuario: Usuario = Usuario()
 ) {
-    // Construtor vazio necessário para a desserialização do Firestore
+
     constructor() : this(
         id = null,
         departamentoId = "",
@@ -25,7 +25,7 @@ data class Equipamento(
     )
 
     companion object {
-        // Métodos de conversão personalizados, se necessário
+
     }
 }
 
@@ -33,6 +33,6 @@ data class Usuario(
     val id: String = "",
     val nome: String = ""
 ) {
-    // Construtor vazio necessário para a desserialização do Firestore
+
     constructor() : this(id = "", nome = "")
 }

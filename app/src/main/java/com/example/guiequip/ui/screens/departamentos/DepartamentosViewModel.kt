@@ -19,7 +19,7 @@ class DepartamentosViewModel : ViewModel() {
     fun fetchDepartamentos() {
         viewModelScope.launch {
             try {
-                Log.d("DepartamentosViewModel", "Buscando departamentos...") // Log para saber que a busca foi iniciada
+                Log.d("DepartamentosViewModel", "Buscando departamentos...")
                 val departamentosList = db.collection("departamentos")
                     .get()
                     .await()
@@ -29,11 +29,11 @@ class DepartamentosViewModel : ViewModel() {
                         departamento?.copy(id = it.id)
                     }
 
-                Log.d("DepartamentosViewModel", "Departamentos recebidos: ${departamentosList.size}") // Log para mostrar a quantidade de departamentos recebidos
+                Log.d("DepartamentosViewModel", "Departamentos recebidos: ${departamentosList.size}")
                 _departamentos.value = departamentosList
             } catch (e: Exception) {
-                // Tratar erro
-                Log.e("DepartamentosViewModel", "Erro ao buscar departamentos: ${e.message}", e) // Log de erro
+
+                Log.e("DepartamentosViewModel", "Erro ao buscar departamentos: ${e.message}", e)
             }
         }
     }
@@ -110,7 +110,7 @@ class DepartamentosViewModel : ViewModel() {
 
                 if (departamentoSnapshot.exists()) {
                     val departamento = departamentoSnapshot.toObject<Departamento>()
-                    departamento?.id = departamentoSnapshot.id // Adiciona o ID
+                    departamento?.id = departamentoSnapshot.id
                     departamento?.let { onSuccess(it) }
                 } else {
                     Log.e("DepartamentosViewModel", "Departamento não encontrado")

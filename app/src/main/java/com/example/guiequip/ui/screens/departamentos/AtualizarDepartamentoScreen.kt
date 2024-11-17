@@ -68,7 +68,6 @@ fun AtualizarDepartamentoScreen(
                     .padding(padding)
                     .padding(horizontal = 16.dp)
             ) {
-                // Campo Nome
                 OutlinedTextField(
                     value = nome,
                     onValueChange = { nome = it },
@@ -83,7 +82,6 @@ fun AtualizarDepartamentoScreen(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Campo Descrição
                 OutlinedTextField(
                     value = descricao,
                     onValueChange = { descricao = it },
@@ -100,7 +98,6 @@ fun AtualizarDepartamentoScreen(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Botão de Atualizar
                 Button(
                     onClick = {
                         if (nome.isNotBlank() && descricao.isNotBlank()) {

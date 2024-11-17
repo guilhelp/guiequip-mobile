@@ -5,27 +5,25 @@ import EquipamentosViewModel
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import com.example.guiequip.R
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.guiequip.data.Equipamento
 import com.example.guiequip.data.Usuario
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.ui.Alignment
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CriarEquipamentoScreen(
-    departamentoId: String,
-    onBack: () -> Unit,
+fun AtualizarEquipamentoScreen(
+    equipamentoId: String,
     equipamentosViewModel: EquipamentosViewModel = viewModel(),
     colaboradoresViewModel: ColaboradoresViewModel = viewModel(),
+    onBack: () -> Unit,
     onSuccess: () -> Unit,
     onError: (String) -> Unit
 ) {
@@ -40,22 +38,29 @@ fun CriarEquipamentoScreen(
     var tipoEquipamentoMenuExpanded by remember { mutableStateOf(false) }
     var colaboradoresMenuExpanded by remember { mutableStateOf(false) }
 
-    LaunchedEffect(departamentoId) {
-        colaboradoresViewModel.fetchColaboradores(departamentoId)
-    }
-
     val colaboradores = colaboradoresViewModel.colaboradores.collectAsState().value
+
+    LaunchedEffect(equipamentoId) {
+        val equipamento = equipamentosViewModel.getEquipamentoById(equipamentoId)
+        if (equipamento != null) {
+            tipoEquipamento = equipamento.tipoEquipamento
+            processador = equipamento.processador ?: ""
+            ram = equipamento.ram ?: ""
+            hdSsd = equipamento.hdSsd ?: ""
+            marca = equipamento.marca
+            modelo = equipamento.modelo
+            colaboradorSelecionado = equipamento.usuario.id to equipamento.usuario.nome
+            colaboradorPesquisa = TextFieldValue(equipamento.usuario.nome)
+        }
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Criar Equipamento") },
+                title = { Text("Atualizar Equipamento") },
                 navigationIcon = {
                     IconButton(onClick = { onBack() }) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_back),
-                            contentDescription = "Voltar"
-                        )
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Voltar")
                     }
                 }
             )
@@ -68,6 +73,7 @@ fun CriarEquipamentoScreen(
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+
             Box {
                 OutlinedTextField(
                     value = tipoEquipamento,
@@ -190,7 +196,12 @@ fun CriarEquipamentoScreen(
 
             OutlinedTextField(
                 value = colaboradorPesquisa,
-                onValueChange = { colaboradorPesquisa = it },
+                onValueChange = {
+                    colaboradorPesquisa = it
+                    if (it.text.isEmpty()) {
+                        colaboradorSelecionado = null
+                    }
+                },
                 label = { Text("Pesquisar Colaborador") },
                 modifier = Modifier.fillMaxWidth(),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -225,25 +236,22 @@ fun CriarEquipamentoScreen(
 
             Button(
                 onClick = {
-                    val equipamentoData = mutableMapOf(
-                        "departamentoId" to departamentoId,
-                        "tipoEquipamento" to tipoEquipamento,
-                        "marca" to marca,
-                        "modelo" to modelo,
-                        "usuario" to mapOf(
-                            "id" to (colaboradorSelecionado?.first ?: ""),
-                            "nome" to (colaboradorSelecionado?.second ?: "")
+                    val equipamento = Equipamento(
+                        id = equipamentoId,
+                        departamentoId = "",
+                        tipoEquipamento = tipoEquipamento,
+                        marca = marca,
+                        modelo = modelo,
+                        processador = if (tipoEquipamento == "Notebook") processador else null,
+                        ram = if (tipoEquipamento == "Notebook") ram else null,
+                        hdSsd = if (tipoEquipamento == "Notebook") hdSsd else null,
+                        usuario = Usuario(
+                            id = colaboradorSelecionado?.first.orEmpty(), // Define como vazio se for null
+                            nome = colaboradorSelecionado?.second.orEmpty() // Define como vazio se for null
                         )
                     )
-
-                    if (tipoEquipamento == "Notebook") {
-                        equipamentoData["processador"] = processador
-                        equipamentoData["ram"] = ram
-                        equipamentoData["hdSsd"] = hdSsd
-                    }
-
-                    equipamentosViewModel.createEquipamento(
-                        equipamentoData = equipamentoData,
+                    equipamentosViewModel.updateEquipamento(
+                        equipamento,
                         onSuccess = { onSuccess() },
                         onError = { onError(it) }
                     )
@@ -254,11 +262,7 @@ fun CriarEquipamentoScreen(
                 ),
                 modifier = Modifier.align(Alignment.End)
             ) {
-                Text("Cadastrar")
-            }
-
-        }
+                Text("Atualizar")
+            } }
     }
 }
-
-

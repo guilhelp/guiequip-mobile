@@ -30,6 +30,7 @@ import androidx.navigation.NavController
 import com.example.guiequip.R
 import com.example.guiequip.data.Colaborador
 import com.example.guiequip.ui.screens.dashboard.DrawerContent
+import com.example.guiequip.ui.screens.equipamentos.DrawerContentEquipamentos
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,7 +41,6 @@ fun ColaboradoresScreen(
     onAdd: () -> Unit,
     colaboradoresViewModel: ColaboradoresViewModel = viewModel()
 ) {
-    // Fetch colaboradores quando o departamentoId mudar
     LaunchedEffect(departamentoId) {
         colaboradoresViewModel.fetchColaboradores(departamentoId)
     }
@@ -53,7 +53,9 @@ fun ColaboradoresScreen(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            DrawerContentColaboradores(navController = navController, departamentoId = departamentoId)
+            if (drawerState.isOpen) {
+                DrawerContentColaboradores(navController = navController, departamentoId = departamentoId)
+            }
         },
         gesturesEnabled = drawerState.isOpen
     ) {
@@ -66,14 +68,12 @@ fun ColaboradoresScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            // Logo do lado esquerdo
                             Image(
                                 painter = painterResource(R.drawable.logo),
                                 contentDescription = "Logo",
                                 modifier = Modifier.height(90.dp),
                                 alignment = Alignment.CenterStart
                             )
-                            // Botão de menu hambúrguer do lado direito
                             IconButton(onClick = { scope.launch { drawerState.open() } }) {
                                 Icon(Icons.Default.Menu, contentDescription = "Menu")
                             }
@@ -116,7 +116,6 @@ fun ColaboradoresScreen(
                 )
 
                 if (colaboradores.isEmpty()) {
-                    // Exibe mensagem caso não haja colaboradores
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
@@ -156,13 +155,11 @@ fun ColaboradorCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .clickable { /* Opcional: ação ao clicar no card inteiro */ },
+            .padding(vertical = 8.dp),
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            // Nome do colaborador
             Text(
                 text = colaborador.nome,
                 fontSize = 18.sp,
@@ -176,7 +173,6 @@ fun ColaboradorCard(
                 fontSize = 16.sp,
                 color = Color.Gray
             )
-
             Row(
                 horizontalArrangement = Arrangement.End,
                 modifier = Modifier
@@ -211,58 +207,63 @@ fun DrawerContentColaboradores(navController: NavController, departamentoId: Str
     Box(
         modifier = Modifier
             .background(Color.White)
-            .padding(16.dp)
-            .fillMaxSize(0.5f)
+            .fillMaxSize()
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(), // Garante que ocupe a largura total dentro da Box
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            // Botão Voltar
-            TextButton(onClick = { navController.navigate("departamentos_screen") }) {
-                Text(
-                    text = "Voltar",
-                    style = androidx.compose.ui.text.TextStyle(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = Color.Black
-                )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(24.dp)
+            ) {
+
+                TextButton(onClick = { navController.navigate("departamentos_screen") }) {
+                    Text(
+                        text = "Voltar",
+                        style = androidx.compose.ui.text.TextStyle(
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = Color.Black
+                    )
+                }
+
+                TextButton(onClick = { navController.navigate("dashboard_screen/$departamentoId") }) {
+                    Text(
+                        text = "Dashboard",
+                        style = androidx.compose.ui.text.TextStyle(
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = Color.Black
+                    )
+                }
+
+                TextButton(onClick = { navController.navigate("equipamentos_screen/$departamentoId") }) {
+                    Text(
+                        text = "Equipamentos",
+                        style = androidx.compose.ui.text.TextStyle(
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = Color.Black
+                    )
+                }
+
+                TextButton(onClick = { navController.navigate("colaboradores_screen/$departamentoId") }) {
+                    Text(
+                        text = "Colaboradores",
+                        style = androidx.compose.ui.text.TextStyle(
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = Color.Black
+                    )
+                }
             }
-            // Botão Dashboard
-            TextButton(onClick = { navController.navigate("dashboard_screen/$departamentoId") }) {
-                Text(
-                    text = "Dashboard",
-                    style = androidx.compose.ui.text.TextStyle(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = Color.Black
-                )
-            }
-            // Botão Equipamentos
-            TextButton(onClick = { navController.navigate("equipamentos_screen/$departamentoId") }) {
-                Text(
-                    text = "Equipamentos",
-                    style = androidx.compose.ui.text.TextStyle(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = Color.Black
-                )
-            }
-            // Botão Colaboradores
-            TextButton(onClick = { navController.navigate("colaboradores_screen/$departamentoId") }) {
-                Text(
-                    text = "Colaboradores",
-                    style = androidx.compose.ui.text.TextStyle(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = Color.Black
-                )
-            }
-            // Botão Sair
+
             TextButton(onClick = { navController.navigate("login_screen") }) {
                 Text(
                     text = "Sair",

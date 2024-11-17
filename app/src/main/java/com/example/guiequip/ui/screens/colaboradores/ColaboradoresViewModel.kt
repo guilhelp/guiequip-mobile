@@ -15,7 +15,6 @@ class ColaboradoresViewModel : ViewModel() {
     private val _colaboradores = MutableStateFlow<List<Colaborador>>(emptyList())
     val colaboradores: StateFlow<List<Colaborador>> get() = _colaboradores
 
-    // Busca colaboradores pelo departamentoId
     fun fetchColaboradores(departamentoId: String) {
         viewModelScope.launch {
             try {
@@ -35,7 +34,6 @@ class ColaboradoresViewModel : ViewModel() {
         }
     }
 
-    // Exclui um colaborador pelo ID
     fun deleteColaborador(colaboradorId: String) {
         viewModelScope.launch {
             try {
@@ -48,7 +46,6 @@ class ColaboradoresViewModel : ViewModel() {
         }
     }
 
-    // Busca um colaborador pelo ID
     suspend fun getColaboradorById(colaboradorId: String): Colaborador? {
         return try {
             val doc = db.collection("colaboradores").document(colaboradorId).get().await()
@@ -59,7 +56,6 @@ class ColaboradoresViewModel : ViewModel() {
         }
     }
 
-    // Atualiza os dados de um colaborador
     fun updateColaborador(colaboradorId: String, nome: String, email: String, onSuccess: () -> Unit, onError: (Exception) -> Unit) {
         viewModelScope.launch {
             try {

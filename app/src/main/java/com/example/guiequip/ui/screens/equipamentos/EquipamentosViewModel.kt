@@ -16,7 +16,6 @@ class EquipamentosViewModel : ViewModel() {
     private val _equipamentos = MutableStateFlow<List<Equipamento>>(emptyList())
     val equipamentos: StateFlow<List<Equipamento>> get() = _equipamentos
 
-    // Busca equipamentos pelo departamentoId
     fun fetchEquipamentos(departamentoId: String) {
         viewModelScope.launch {
             try {
@@ -32,7 +31,7 @@ class EquipamentosViewModel : ViewModel() {
 
                         val equipamento = doc.toObject<Equipamento>()
                         equipamento?.copy(
-                            id = doc.id, // Inclui o ID do documento
+                            id = doc.id,
                             usuario = doc.get("usuario")?.let {
                                 (it as? Map<*, *>)?.let { userMap ->
                                     Usuario(
@@ -40,7 +39,7 @@ class EquipamentosViewModel : ViewModel() {
                                         nome = userMap["nome"] as? String ?: ""
                                     )
                                 }
-                            } ?: Usuario() // Valor padrão caso o usuário não esteja presente
+                            } ?: Usuario()
                         )
                     }
 
@@ -52,8 +51,6 @@ class EquipamentosViewModel : ViewModel() {
         }
     }
 
-
-    // Exclui um equipamento pelo ID
     fun deleteEquipamento(equipamentoId: String) {
         viewModelScope.launch {
             try {
@@ -65,6 +62,52 @@ class EquipamentosViewModel : ViewModel() {
             }
         }
     }
+
+    fun createEquipamento(
+        equipamentoData: Map<String, Any>,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                db.collection("equipamentos").add(equipamentoData).await()
+                onSuccess()
+            } catch (e: Exception) {
+                Log.e("EquipamentosViewModel", "Erro ao criar equipamento: ${e.message}")
+                onError(e.message ?: "Erro desconhecido")
+            }
+        }
+    }
+
+    fun updateEquipamento(equipamento: Equipamento, onSuccess: () -> Unit, onError: (String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val data = mutableMapOf<String, Any>(
+                    "tipoEquipamento" to equipamento.tipoEquipamento,
+                    "marca" to equipamento.marca,
+                    "modelo" to equipamento.modelo,
+                    "usuario" to mapOf(
+                        "id" to equipamento.usuario.id,
+                        "nome" to equipamento.usuario.nome
+                    )
+                )
+                if (equipamento.tipoEquipamento == "Notebook") {
+                    equipamento.processador?.let { data["processador"] = it }
+                    equipamento.ram?.let { data["ram"] = it }
+                    equipamento.hdSsd?.let { data["hdSsd"] = it }
+                }
+                db.collection("equipamentos").document(equipamento.id!!).update(data).await()
+                onSuccess()
+            } catch (e: Exception) {
+                onError(e.message ?: "Erro ao atualizar equipamento.")
+            }
+        }
+    }
+
+
+
+
+
 
     // Busca um equipamento pelo ID
     suspend fun getEquipamentoById(equipamentoId: String): Equipamento? {

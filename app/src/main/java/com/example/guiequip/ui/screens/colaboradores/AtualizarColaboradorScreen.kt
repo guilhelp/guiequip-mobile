@@ -53,10 +53,8 @@ fun AtualizarColaboradorScreen(
     var nome by remember { mutableStateOf("") }
     var cargo by remember { mutableStateOf("") }
 
-    // Fetch the colaborador data from Firestore when the screen is first launched
     val db = FirebaseFirestore.getInstance()
 
-    // Usando um efeito de "side effect" (LaunchedEffect) para buscar dados do colaborador
     LaunchedEffect(colaboradorId) {
         db.collection("colaboradores")
             .document(colaboradorId)
@@ -90,7 +88,7 @@ fun AtualizarColaboradorScreen(
                     .padding(padding)
                     .padding(horizontal = 16.dp)
             ) {
-                // Campo Nome
+
                 OutlinedTextField(
                     value = nome,
                     onValueChange = { nome = it },
@@ -105,7 +103,7 @@ fun AtualizarColaboradorScreen(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Campo Cargo
+
                 OutlinedTextField(
                     value = cargo,
                     onValueChange = { cargo = it },
@@ -121,7 +119,7 @@ fun AtualizarColaboradorScreen(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Botão de Atualizar
+
                 Button(
                     onClick = {
                         if (nome.isNotBlank() && cargo.isNotBlank()) {

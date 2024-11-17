@@ -90,7 +90,6 @@ fun CriarDepartamentoScreen(onBack: () -> Unit, onSubmit: (String, String) -> Un
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Botão
             Button(
                 onClick = {
                     if (nome.isNotBlank() && descricao.isNotBlank()) {
